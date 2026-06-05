@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { formatCurrency, buildWhatsAppUrl } from '@/lib/whatsapp';
@@ -47,7 +48,7 @@ export default function CheckoutPage() {
         if (step === 1) return dados.nome.trim().length >= 2 && dados.telefone.replace(/\D/g, '').length >= 10;
         if (step === 2) return !!dados.tipoEntrega;
         if (step === 3 && dados.tipoEntrega === 'delivery') {
-            return !!dados.cep.replace(/\D/g, '').length >= 8 &&
+            return dados.cep.replace(/\D/g, '').length >= 8 &&
                 dados.bairro.trim().length > 0 &&
                 dados.rua.trim().length > 0 &&
                 dados.numero.trim().length > 0;
@@ -103,7 +104,14 @@ export default function CheckoutPage() {
                     >
                         ← Voltar
                     </button>
-                    <h1 className="text-white font-bold text-lg flex-1">Finalizar Pedido</h1>
+                    <Image
+                        src="/logo-pequeno.png"
+                        alt="Logo"
+                        width={120}
+                        height={40}
+                        className="h-10 w-auto object-contain"
+                        priority
+                    />
                 </div>
             </div>
 
@@ -229,7 +237,7 @@ export default function CheckoutPage() {
                                 disabled={!canAdvance()}
                                 className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors"
                             >
-                                📱 Enviar pelo WhatsApp
+                                📱 Finalizar pedido
                             </button>
                         )}
                     </div>
