@@ -108,7 +108,6 @@ export default function ProductModal({ product, onClose }) {
                         <textarea
                             value={observacao}
                             onChange={(e) => setObservacao(e.target.value)}
-                            placeholder="Ex: sem gelo, embrulhado para presente..."
                             maxLength={200}
                             rows={3}
                             className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 resize-none"
