@@ -89,6 +89,21 @@ export default function StepEndereco({ dados, onChange }) {
                 />
             </div>
 
+            {/* Complemento */}
+            <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Complemento
+                    <span className="text-xs text-gray-400 font-normal ml-1">(opcional)</span>
+                </label>
+                <input
+                    type="text"
+                    value={dados.complemento ?? ''}
+                    onChange={(e) => onChange({ ...dados, complemento: e.target.value })}
+                    placeholder="Ex: Apto 201, Bloco B"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                />
+            </div>
+
             {/* Ponto de referência */}
             <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">

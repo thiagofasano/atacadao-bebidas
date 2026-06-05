@@ -38,6 +38,7 @@ export default function CheckoutPage() {
         bairro: '',
         rua: '',
         numero: '',
+        complemento: '',
         referencia: '',
     });
 
@@ -69,6 +70,7 @@ export default function CheckoutPage() {
             bairro: dados.bairro,
             rua: dados.rua,
             numero: dados.numero,
+            complemento: dados.complemento,
             referencia: dados.referencia,
         });
         dispatch({ type: 'CLEAR_CART' });
@@ -96,14 +98,7 @@ export default function CheckoutPage() {
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
             <div className="bg-amber-500 shadow-md">
-                <div className="max-w-lg mx-auto px-4 py-4 flex items-center gap-3">
-                    <button
-                        onClick={() => router.back()}
-                        className="text-white hover:text-amber-100 transition-colors p-1 -ml-1"
-                        aria-label="Voltar"
-                    >
-                        ← Voltar
-                    </button>
+                <div className="max-w-lg mx-auto px-4 py-4 flex items-center justify-between">
                     <Image
                         src="/logo-pequeno.png"
                         alt="Logo"
@@ -112,6 +107,13 @@ export default function CheckoutPage() {
                         className="h-10 w-auto object-contain"
                         priority
                     />
+                    <button
+                        onClick={() => router.back()}
+                        className="text-white hover:text-amber-100 transition-colors font-semibold"
+                        aria-label="Voltar"
+                    >
+                        ← Voltar
+                    </button>
                 </div>
             </div>
 

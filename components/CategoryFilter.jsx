@@ -1,8 +1,8 @@
 'use client';
 
-export default function CategoryFilter({ grupos, activeId, onSelect, disabled }) {
+export default function CategoryFilter({ grupos, activeId, onSelect }) {
     return (
-        <div className={`bg-white border-b border-gray-100 sticky top-[105px] z-30 transition-opacity ${disabled ? 'opacity-40 pointer-events-none' : ''}`}>
+        <div className="bg-white border-b border-gray-100 sticky top-[105px] z-30">
             <div className="max-w-5xl mx-auto px-4 py-4">
                 <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 pt-1">
                     <button
