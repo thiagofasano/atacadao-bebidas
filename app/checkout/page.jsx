@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { formatCurrency, buildWhatsAppUrl } from '@/lib/whatsapp';
+import { salvarPedido } from '@/lib/actions';
 import StepDados from '@/components/steps/StepDados';
 import StepEntrega from '@/components/steps/StepEntrega';
 import StepEndereco from '@/components/steps/StepEndereco';
@@ -58,8 +59,25 @@ export default function CheckoutPage() {
         return !!dados.tipoPagamento;
     }
 
-    function handleConfirm() {
+    async function handleConfirm() {
+        const numeroPedido = await salvarPedido({
+            nome: dados.nome,
+            telefone: dados.telefone,
+            tipoEntrega: dados.tipoEntrega,
+            tipoPagamento: dados.tipoPagamento,
+            troco: dados.troco,
+            cep: dados.cep,
+            bairro: dados.bairro,
+            rua: dados.rua,
+            numero: dados.numero,
+            complemento: dados.complemento,
+            referencia: dados.referencia,
+            items,
+            total: totalValue,
+        });
+
         const url = buildWhatsAppUrl({
+            numeroPedido,
             items,
             nome: dados.nome,
             telefone: dados.telefone,
