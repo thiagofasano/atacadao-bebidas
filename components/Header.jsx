@@ -58,7 +58,7 @@ export default function Header({ onCartClick, onInfoClick, searchQuery, onSearch
                 <div className="flex items-center gap-2 shrink-0 ml-auto sm:ml-0">
                     <button
                         onClick={onInfoClick}
-                        className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-3 py-2 rounded-full transition-colors"
+                        className="flex items-center gap-1 bg-orange-300 hover:bg-orange-400 text-white text-xs font-semibold px-3 py-2 rounded-full transition-colors cursor-pointer"
                         aria-label="Informações da loja"
                     >
                         <span>ℹ️</span>
@@ -67,7 +67,7 @@ export default function Header({ onCartClick, onInfoClick, searchQuery, onSearch
 
                     <button
                         onClick={onCartClick}
-                        className="relative flex items-center gap-1 bg-white text-amber-600 hover:bg-amber-50 text-sm font-bold px-3 py-2 rounded-full transition-colors shadow"
+                        className="relative flex items-center gap-1 bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-3 py-2 rounded-full transition-colors shadow cursor-pointer"
                         aria-label="Ver carrinho"
                     >
                         <span>🛒</span>

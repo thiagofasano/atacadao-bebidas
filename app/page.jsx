@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { fetchGrupos, fetchProdutos } from '@/lib/actions';
 import Header from '@/components/Header';
 import CategoryFilter from '@/components/CategoryFilter';
 import ProductCard from '@/components/ProductCard';
@@ -28,30 +29,19 @@ export default function HomePage() {
 
     // Load groups once
     useEffect(() => {
-        fetch('/api/grupos')
-            .then((r) => r.json())
-            .then((data) => {
-                const list = Array.isArray(data) ? data : data?.data ?? [];
-                setGrupos(list);
-            })
+        fetchGrupos()
+            .then(setGrupos)
             .catch(console.error);
     }, []);
 
     // Load products when group or search changes
     useEffect(() => {
         setLoading(true);
-        const params = new URLSearchParams();
-        if (debouncedSearch) {
-            params.set('nome', debouncedSearch);
-        } else if (activeGrupoId) {
-            params.set('grupo_id', activeGrupoId);
-        }
-        fetch(`/api/produtos?${params.toString()}`)
-            .then((r) => r.json())
-            .then((data) => {
-                const list = Array.isArray(data) ? data : data?.data ?? [];
-                setProdutos(list.filter((p) => p.grupo_id));
-            })
+        fetchProdutos({
+            nome: debouncedSearch || undefined,
+            grupo_id: !debouncedSearch && activeGrupoId ? activeGrupoId : undefined,
+        })
+            .then(setProdutos)
             .catch(console.error)
             .finally(() => setLoading(false));
     }, [activeGrupoId, debouncedSearch]);

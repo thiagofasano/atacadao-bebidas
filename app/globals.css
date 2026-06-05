@@ -4,6 +4,14 @@
 @source "../context/**/*.{js,jsx,ts,tsx}";
 @source "../lib/**/*.{js,jsx,ts,tsx}";
 
+@keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+    animation: fade-in-up 0.2s ease-out;
+}
+
 body {
   background: #f9fafb;
   color: #111827;

@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
+import { useToast } from '@/context/ToastContext';
 import { formatCurrency } from '@/lib/whatsapp';
 
 export default function ProductModal({ product, onClose }) {
     const { dispatch, items } = useCart();
+    const { showToast } = useToast();
     const [qty, setQty] = useState(1);
     const [observacao, setObservacao] = useState('');
 
@@ -15,6 +17,7 @@ export default function ProductModal({ product, onClose }) {
 
     function handleAdd() {
         dispatch({ type: 'ADD_ITEM', payload: { product, qty, observacao } });
+        showToast({ message: `${product.nome} adicionado ao carrinho` });
         onClose();
     }
 

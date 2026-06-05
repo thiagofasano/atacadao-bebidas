@@ -56,7 +56,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
                     </span>
                     {!indisponivel && (
                         <span className="bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                            + Adicionar
+                            Adicionar
                         </span>
                     )}
                 </div>

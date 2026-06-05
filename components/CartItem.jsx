@@ -1,10 +1,12 @@
 'use client';
 
 import { useCart } from '@/context/CartContext';
+import { useToast } from '@/context/ToastContext';
 import { formatCurrency } from '@/lib/whatsapp';
 
 export default function CartItem({ item }) {
     const { dispatch } = useCart();
+    const { showToast } = useToast();
 
     return (
         <div className="flex gap-3 py-3 border-b border-gray-100 last:border-0">
@@ -36,7 +38,10 @@ export default function CartItem({ item }) {
                 </div>
                 <span className="text-sm font-bold text-gray-800">{formatCurrency(item.preco * item.qty)}</span>
                 <button
-                    onClick={() => dispatch({ type: 'REMOVE_ITEM', payload: { id: item.id } })}
+                    onClick={() => {
+                        dispatch({ type: 'REMOVE_ITEM', payload: { id: item.id } });
+                        showToast({ message: `${item.nome} removido`, type: 'remove' });
+                    }}
                     className="text-xs text-red-400 hover:text-red-600 transition-colors"
                 >
                     Remover

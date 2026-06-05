@@ -237,7 +237,7 @@ export default function CheckoutPage() {
                             <button
                                 onClick={handleConfirm}
                                 disabled={!canAdvance()}
-                                className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors"
+                                className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors cursor-pointer"
                             >
                                 📱 Finalizar pedido
                             </button>

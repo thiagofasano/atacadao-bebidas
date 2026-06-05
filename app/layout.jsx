@@ -1,4 +1,5 @@
 import { CartProvider } from '@/context/CartContext';
+import { ToastProvider } from '@/context/ToastContext';
 import './globals.css';
 
 export const metadata = {
@@ -10,7 +11,9 @@ export default function RootLayout({ children }) {
     return (
         <html lang="pt-BR">
             <body>
-                <CartProvider>{children}</CartProvider>
+                <CartProvider>
+                    <ToastProvider>{children}</ToastProvider>
+                </CartProvider>
             </body>
         </html>
     );
