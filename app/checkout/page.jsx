@@ -6,9 +6,17 @@ import { useCart } from '@/context/CartContext';
 import { formatCurrency, buildWhatsAppUrl } from '@/lib/whatsapp';
 import StepDados from '@/components/steps/StepDados';
 import StepEntrega from '@/components/steps/StepEntrega';
+import StepEndereco from '@/components/steps/StepEndereco';
 import StepPagamento from '@/components/steps/StepPagamento';
 
-const STEPS = [
+const STEPS_DELIVERY = [
+    { id: 1, label: 'Dados', icon: '👤' },
+    { id: 2, label: 'Entrega', icon: '📦' },
+    { id: 3, label: 'Endereço', icon: '📍' },
+    { id: 4, label: 'Pagamento', icon: '💳' },
+];
+
+const STEPS_RETIRADA = [
     { id: 1, label: 'Dados', icon: '👤' },
     { id: 2, label: 'Entrega', icon: '📦' },
     { id: 3, label: 'Pagamento', icon: '💳' },
@@ -25,13 +33,27 @@ export default function CheckoutPage() {
         tipoEntrega: 'delivery',
         tipoPagamento: '',
         troco: '',
+        cep: '',
+        bairro: '',
+        rua: '',
+        numero: '',
+        referencia: '',
     });
+
+    const STEPS = dados.tipoEntrega === 'retirada' ? STEPS_RETIRADA : STEPS_DELIVERY;
+    const totalSteps = STEPS.length;
 
     function canAdvance() {
         if (step === 1) return dados.nome.trim().length >= 2 && dados.telefone.replace(/\D/g, '').length >= 10;
         if (step === 2) return !!dados.tipoEntrega;
-        if (step === 3) return !!dados.tipoPagamento;
-        return false;
+        if (step === 3 && dados.tipoEntrega === 'delivery') {
+            return !!dados.cep.replace(/\D/g, '').length >= 8 &&
+                dados.bairro.trim().length > 0 &&
+                dados.rua.trim().length > 0 &&
+                dados.numero.trim().length > 0;
+        }
+        // pagamento (step 3 retirada / step 4 delivery)
+        return !!dados.tipoPagamento;
     }
 
     function handleConfirm() {
@@ -42,6 +64,11 @@ export default function CheckoutPage() {
             tipoEntrega: dados.tipoEntrega,
             tipoPagamento: dados.tipoPagamento,
             troco: dados.troco,
+            cep: dados.cep,
+            bairro: dados.bairro,
+            rua: dados.rua,
+            numero: dados.numero,
+            referencia: dados.referencia,
         });
         dispatch({ type: 'CLEAR_CART' });
         window.open(url, '_blank');
@@ -137,10 +164,10 @@ export default function CheckoutPage() {
                                     <div className={`flex items-center gap-1.5 shrink-0 ${step >= s.id ? 'text-white' : 'text-amber-300'}`}>
                                         <div
                                             className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 ${step > s.id
-                                                    ? 'bg-white text-amber-600 border-white'
-                                                    : step === s.id
-                                                        ? 'bg-amber-600 border-white text-white'
-                                                        : 'border-amber-300 text-amber-300'
+                                                ? 'bg-white text-amber-600 border-white'
+                                                : step === s.id
+                                                    ? 'bg-amber-600 border-white text-white'
+                                                    : 'border-amber-300 text-amber-300'
                                                 }`}
                                         >
                                             {step > s.id ? '✓' : s.id}
@@ -166,7 +193,8 @@ export default function CheckoutPage() {
                     <div className="px-5 pb-5">
                         {step === 1 && <StepDados dados={dados} onChange={setDados} />}
                         {step === 2 && <StepEntrega dados={dados} onChange={setDados} />}
-                        {step === 3 && <StepPagamento dados={dados} onChange={setDados} />}
+                        {step === 3 && dados.tipoEntrega === 'delivery' && <StepEndereco dados={dados} onChange={setDados} />}
+                        {((step === 3 && dados.tipoEntrega === 'retirada') || (step === 4 && dados.tipoEntrega === 'delivery')) && <StepPagamento dados={dados} onChange={setDados} />}
                     </div>
 
                     {/* Navigation */}
@@ -187,7 +215,7 @@ export default function CheckoutPage() {
                             </button>
                         )}
 
-                        {step < 3 ? (
+                        {step < totalSteps ? (
                             <button
                                 onClick={() => setStep(step + 1)}
                                 disabled={!canAdvance()}
