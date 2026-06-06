@@ -66,16 +66,21 @@ export default function Header({ onCartClick, onInfoClick, searchQuery, onSearch
 
                     <button
                         onClick={onCartClick}
-                        className="relative flex items-center gap-1 bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-3 py-2 rounded-full transition-colors shadow cursor-pointer"
+                        className="relative flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 active:scale-95 text-white text-sm font-bold px-4 py-2.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer"
                         aria-label="Ver carrinho"
                     >
-                        <span>🛒</span>
-                        {totalQty > 0 && (
-                            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                                {totalQty > 99 ? '99+' : totalQty}
-                            </span>
-                        )}
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 fill-white shrink-0" viewBox="0 0 24 24"><path d="M6 2H3a1 1 0 0 0 0 2h1.22l2.55 11.48A2 2 0 1 0 9 17h9a1 1 0 0 0 .97-.75l2-8A1 1 0 0 0 20 7H6.3L5.94 5.27A1 1 0 0 0 5 4.5V4H4V2h2zm3 16a1 1 0 1 1-1-1 1 1 0 0 1 1 1zm9 0a1 1 0 1 1-1-1 1 1 0 0 1 1 1z" /></svg>
                         <span className="hidden md:inline">Carrinho</span>
+                        {totalQty > 0 && (
+                            <>
+                                <span className="hidden md:inline bg-white/25 text-white text-xs font-extrabold px-1.5 py-0.5 rounded-full leading-none">
+                                    {totalQty > 99 ? '99+' : totalQty}
+                                </span>
+                                <span className="md:hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shadow">
+                                    {totalQty > 99 ? '99+' : totalQty}
+                                </span>
+                            </>
+                        )}
                     </button>
                 </div>
             </div>
