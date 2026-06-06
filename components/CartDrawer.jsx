@@ -21,7 +21,7 @@ export default function CartDrawer({ onClose }) {
             <div className="relative bg-white w-full max-w-sm h-full flex flex-col shadow-2xl">
                 {/* Header */}
                 <div className="bg-amber-500 px-5 py-4 flex items-center justify-between shrink-0">
-                    <h2 className="text-white font-bold text-lg">🛒 Carrinho</h2>
+                    <h2 className="text-white font-bold text-lg">Carrinho</h2>
                     <button
                         onClick={onClose}
                         className="text-white hover:text-amber-100 text-2xl leading-none transition-colors"

@@ -56,7 +56,7 @@ export default function CheckoutPage() {
                 dados.numero.trim().length > 0;
         }
         // pagamento (step 3 retirada / step 4 delivery)
-        return !!dados.tipoPagamento;
+        return !!dados.tipoPagamento && (dados.tipoPagamento !== 'dinheiro' || dados.troco !== '');
     }
 
     async function handleConfirm() {
@@ -115,19 +115,19 @@ export default function CheckoutPage() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <div className="bg-amber-500 shadow-md">
+            <div className="bg-gray-100 shadow-md border-b border-gray-200">
                 <div className="max-w-lg mx-auto px-4 py-4 flex items-center justify-between">
                     <Image
                         src="/logo-pequeno.png"
                         alt="Logo"
-                        width={120}
+                        width={160}
                         height={40}
                         className="h-10 w-auto object-contain"
                         priority
                     />
                     <button
                         onClick={() => router.back()}
-                        className="text-white hover:text-amber-100 transition-colors font-semibold"
+                        className="text-gray-700 hover:text-gray-500 transition-colors font-semibold"
                         aria-label="Voltar"
                     >
                         ← Voltar

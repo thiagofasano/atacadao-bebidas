@@ -24,7 +24,7 @@ export default function Header({ onCartClick, onInfoClick, searchQuery, onSearch
                     <Image
                         src="/logo-pequeno.png"
                         alt={STORE_INFO.nome}
-                        width={56}
+                        width={160}
                         height={56}
                         className="h-14 w-auto object-contain sm:hidden"
                         priority
@@ -58,10 +58,9 @@ export default function Header({ onCartClick, onInfoClick, searchQuery, onSearch
                 <div className="flex items-center gap-2 shrink-0 ml-auto sm:ml-0">
                     <button
                         onClick={onInfoClick}
-                        className="flex items-center gap-1 bg-orange-300 hover:bg-orange-400 text-white text-xs font-semibold px-3 py-2 rounded-full transition-colors cursor-pointer"
+                        className="flex items-center gap-1  text-xs font-semibold px-3 py-2 rounded-full transition-colors cursor-pointer"
                         aria-label="Informações da loja"
                     >
-                        <span>ℹ️</span>
                         <span className="hidden md:inline">Informações</span>
                     </button>
 

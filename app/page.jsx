@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { fetchGrupos, fetchProdutos } from '@/lib/actions';
 import Header from '@/components/Header';
 import CategoryFilter from '@/components/CategoryFilter';
@@ -12,7 +12,10 @@ import InfoModal from '@/components/InfoModal';
 export default function HomePage() {
     const [grupos, setGrupos] = useState([]);
     const [produtos, setProdutos] = useState([]);
-    const [activeGrupoId, setActiveGrupoId] = useState(null);
+    // filterGrupoId: categoria selecionada pelo clique (null = mostrar todas agrupadas)
+    const [filterGrupoId, setFilterGrupoId] = useState(null);
+    // scrollGrupoId: categoria destacada no nav conforme scroll (apenas na home)
+    const [scrollGrupoId, setScrollGrupoId] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [loading, setLoading] = useState(false);
@@ -21,41 +24,91 @@ export default function HomePage() {
     const [cartOpen, setCartOpen] = useState(false);
     const [infoOpen, setInfoOpen] = useState(false);
 
+    const sectionRefs = useRef({});
+
     // Debounce search
     useEffect(() => {
         const t = setTimeout(() => setDebouncedSearch(searchQuery), 300);
         return () => clearTimeout(t);
     }, [searchQuery]);
 
-    // Load groups once
+    // Load groups and all products once
     useEffect(() => {
-        fetchGrupos()
-            .then(setGrupos)
-            .catch(console.error);
+        fetchGrupos().then(setGrupos).catch(console.error);
     }, []);
 
-    // Load products when group or search changes
     useEffect(() => {
         setLoading(true);
-        fetchProdutos({
-            nome: debouncedSearch || undefined,
-            grupo_id: !debouncedSearch && activeGrupoId ? activeGrupoId : undefined,
-        })
+        fetchProdutos()
             .then(setProdutos)
             .catch(console.error)
             .finally(() => setLoading(false));
-    }, [activeGrupoId, debouncedSearch]);
+    }, []);
 
-    // When user types, clear category filter
+    // Group products by categoria in the same order as grupos array
+    const groups = useMemo(() => {
+        const map = {};
+        produtos.forEach((p) => {
+            if (!map[p.grupo_id]) map[p.grupo_id] = [];
+            map[p.grupo_id].push(p);
+        });
+        return grupos
+            .map((g) => ({ grupo: g, items: map[g.id] || [] }))
+            .filter((g) => g.items.length > 0);
+    }, [grupos, produtos]);
+
+    const isHomeView = !debouncedSearch && filterGrupoId === null;
+
+    // Products filtered by active category or search
+    const filteredProdutos = useMemo(() => {
+        if (debouncedSearch) {
+            const normalize = (s) => s?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            const q = normalize(debouncedSearch);
+            return produtos.filter((p) => normalize(p.nome)?.includes(q));
+        }
+        if (filterGrupoId) {
+            return produtos.filter((p) => p.grupo_id === filterGrupoId);
+        }
+        return null; // null = show grouped home view
+    }, [debouncedSearch, filterGrupoId, produtos]);
+
+    // IntersectionObserver: highlight active category while scrolling (home view only)
+    useEffect(() => {
+        if (!isHomeView || groups.length === 0) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        setScrollGrupoId(Number(entry.target.dataset.grupoId));
+                    }
+                });
+            },
+            { rootMargin: '-180px 0px -55% 0px', threshold: 0 }
+        );
+
+        groups.forEach(({ grupo }) => {
+            const el = sectionRefs.current[grupo.id];
+            if (el) observer.observe(el);
+        });
+
+        return () => observer.disconnect();
+    }, [groups, isHomeView]);
+
     function handleSearchChange(value) {
         setSearchQuery(value);
-        if (value) setActiveGrupoId(null);
+        if (value) setFilterGrupoId(null);
     }
 
     function handleCategorySelect(id) {
-        setActiveGrupoId(id);
         setSearchQuery('');
+        setFilterGrupoId(id);
+        setScrollGrupoId(null);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    // The highlighted tab: clicked category takes priority, otherwise scroll position
+    const activeGrupoId = filterGrupoId ?? scrollGrupoId;
 
     const isSearching = debouncedSearch.length > 0;
 
@@ -75,17 +128,13 @@ export default function HomePage() {
             />
 
             <main className="max-w-5xl mx-auto px-4 py-6">
-                {/* Search result header */}
-                {isSearching && (
+                {/* Search feedback */}
+                {isSearching && !loading && (
                     <div className="mb-4">
-                        {loading ? (
-                            <p className="text-sm text-gray-500">Buscando "{debouncedSearch}"...</p>
-                        ) : (
-                            <p className="text-sm text-gray-600">
-                                <strong>{produtos.length}</strong> resultado{produtos.length !== 1 ? 's' : ''} para{' '}
-                                <strong>"{debouncedSearch}"</strong>
-                            </p>
-                        )}
+                        <p className="text-sm text-gray-600">
+                            <strong>{filteredProdutos.length}</strong> resultado{filteredProdutos.length !== 1 ? 's' : ''} para{' '}
+                            <strong>"{debouncedSearch}"</strong>
+                        </p>
                     </div>
                 )}
 
@@ -104,10 +153,10 @@ export default function HomePage() {
                     </div>
                 )}
 
-                {/* Products grid */}
-                {!loading && produtos.length > 0 && (
+                {/* Search or category filter — flat grid */}
+                {!loading && filteredProdutos !== null && filteredProdutos.length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                        {produtos.map((product) => (
+                        {filteredProdutos.map((product) => (
                             <ProductCard
                                 key={product.id}
                                 product={product}
@@ -117,36 +166,64 @@ export default function HomePage() {
                     </div>
                 )}
 
-                {/* Empty state */}
-                {!loading && produtos.length === 0 && (
+                {/* Empty state for search/filter */}
+                {!loading && filteredProdutos !== null && filteredProdutos.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-20 text-center">
                         <span className="text-6xl mb-4">🔍</span>
                         <p className="text-gray-600 font-semibold text-lg">
                             {isSearching
                                 ? `Nenhum produto encontrado para "${debouncedSearch}"`
-                                : 'Nenhum produto disponível nesta categoria'}
+                                : 'Nenhum produto nesta categoria'}
                         </p>
-                        {isSearching && (
-                            <button
-                                onClick={() => handleSearchChange('')}
-                                className="mt-4 text-amber-600 font-semibold hover:underline text-sm"
-                            >
-                                Limpar busca
-                            </button>
-                        )}
+                        <button
+                            onClick={() => handleCategorySelect(null)}
+                            className="mt-4 text-amber-600 font-semibold hover:underline text-sm"
+                        >
+                            Ver todos os produtos
+                        </button>
+                    </div>
+                )}
+
+                {/* Home — products grouped by category */}
+                {!loading && isHomeView && groups.map(({ grupo, items }) => (
+                    <section
+                        key={grupo.id}
+                        data-grupo-id={grupo.id}
+                        ref={(el) => { sectionRefs.current[grupo.id] = el; }}
+                        className="mb-10"
+                    >
+                        <h2 className="text-lg font-bold text-gray-700 mb-3 border-l-4 border-amber-500 pl-3">
+                            {grupo.nome}
+                        </h2>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                            {items.map((product) => (
+                                <ProductCard
+                                    key={product.id}
+                                    product={product}
+                                    onClick={setSelectedProduct}
+                                />
+                            ))}
+                        </div>
+                    </section>
+                ))}
+
+                {/* Empty state — no products at all */}
+                {!loading && isHomeView && groups.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-20 text-center">
+                        <span className="text-6xl mb-4">🛒</span>
+                        <p className="text-gray-600 font-semibold text-lg">
+                            Nenhum produto disponível
+                        </p>
                     </div>
                 )}
             </main>
 
-            {/* Modals & Drawers */}
             {selectedProduct && (
                 <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
             )}
 
             {cartOpen && (
-                <CartDrawer
-                    onClose={() => setCartOpen(false)}
-                />
+                <CartDrawer onClose={() => setCartOpen(false)} />
             )}
 
             {infoOpen && (
