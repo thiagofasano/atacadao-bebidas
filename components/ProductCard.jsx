@@ -23,7 +23,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
                         src={product.fotos?.[0] ?? product.foto ?? product.imagem}
                         alt={product.nome}
                         loading="lazy"
-                        className="w-full h-full object-contain p-2"
+                        className="w-full h-full object-contain p-2 max-w-[230px] max-h-[250px] mx-auto"
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-5xl">🍺</div>

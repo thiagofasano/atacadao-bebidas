@@ -43,7 +43,7 @@ export default function ProductModal({ product, onClose }) {
                         <img
                             src={product.fotos?.[0] ?? product.foto ?? product.imagem}
                             alt={product.nome}
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-contain max-w-[230px] max-h-[250px] mx-auto"
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-6xl">🍺</div>
