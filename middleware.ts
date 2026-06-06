@@ -35,7 +35,7 @@ export async function middleware(req: NextRequest) {
       valid = await crypto.subtle.verify(
         "HMAC",
         key,
-        sigBytes,
+        sigBytes.buffer as ArrayBuffer,
         enc.encode("admin-auth"),
       );
     } catch {
