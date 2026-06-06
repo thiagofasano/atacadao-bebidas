@@ -8,7 +8,8 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
     const { cartMap } = useCart();
     const cartItem = cartMap?.get(product.id);
     const preco = parseFloat(product.valor_venda ?? product.preco ?? 0);
-    const indisponivel = product.ativo === '0';
+    const semEstoque = product.movimenta_estoque === '1' && parseFloat(product.estoque ?? 1) <= 0;
+    const indisponivel = product.ativo === '0' || semEstoque;
 
     return (
         <div
@@ -39,7 +40,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
                 {/* Unavailable banner */}
                 {indisponivel && (
                     <div className="absolute bottom-0 inset-x-0 bg-black/50 text-white text-xs font-semibold text-center py-1">
-                        Indisponível
+                        {semEstoque ? 'Sem estoque' : 'Indisponível'}
                     </div>
                 )}
             </div>

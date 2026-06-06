@@ -14,6 +14,8 @@ export default function ProductModal({ product, onClose }) {
 
     const cartItem = items.find((i) => i.id === product.id);
     const preco = parseFloat(product.valor_venda ?? product.preco ?? 0);
+    const semEstoque = product.movimenta_estoque === '1' && parseFloat(product.estoque ?? 1) <= 0;
+    const indisponivel = product.ativo === '0' || semEstoque;
 
     function handleAdd() {
         dispatch({ type: 'ADD_ITEM', payload: { product, qty, observacao } });
@@ -48,10 +50,10 @@ export default function ProductModal({ product, onClose }) {
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-6xl">🍺</div>
                     )}
-                    {product.ativo === '0' && (
+                    {indisponivel && (
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                             <span className="bg-red-500 text-white font-bold px-4 py-2 rounded-full text-sm">
-                                Indisponível
+                                {semEstoque ? 'Sem estoque' : 'Indisponível'}
                             </span>
                         </div>
                     )}
@@ -120,12 +122,14 @@ export default function ProductModal({ product, onClose }) {
                 <div className="p-4 border-t border-gray-100 shrink-0">
                     <button
                         onClick={handleAdd}
-                        disabled={product.ativo === '0' || preco <= 0}
+                        disabled={indisponivel || preco <= 0}
                         className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-base transition-colors shadow"
                     >
-                        {product.ativo === '0'
-                            ? 'Produto Indisponível'
-                            : `Adicionar ao Carrinho${preco > 0 ? ` — ${formatCurrency(preco * qty)}` : ''}`}
+                        {semEstoque
+                            ? 'Sem estoque'
+                            : indisponivel
+                                ? 'Produto Indisponível'
+                                : `Adicionar ao Carrinho${preco > 0 ? ` — ${formatCurrency(preco * qty)}` : ''}`}
                     </button>
                 </div>
             </div>
