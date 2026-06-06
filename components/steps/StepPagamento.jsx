@@ -6,9 +6,9 @@ export default function StepPagamento({ dados, onChange }) {
     return (
         <div className="space-y-3">
             {/* Destaque pagamento na entrega */}
-            <div className="flex items-center gap-3 bg-amber-50 border-2 border-amber-400 rounded-xl px-4 py-3 mb-4">
-                <span className="text-2xl shrink-0">💡</span>
-                <p className="text-sm font-bold text-amber-800">
+            <div className="flex items-center gap-3 bg-amber-500 rounded-xl px-4 py-3 mb-4">
+                <span className="text-xl shrink-0">⚠️</span>
+                <p className="text-sm font-bold text-white">
                     O pagamento deve ser realizado na entrega.
                 </p>
             </div>

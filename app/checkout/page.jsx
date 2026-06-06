@@ -56,7 +56,13 @@ export default function CheckoutPage() {
                 dados.numero.trim().length > 0;
         }
         // pagamento (step 3 retirada / step 4 delivery)
-        return !!dados.tipoPagamento && (dados.tipoPagamento !== 'dinheiro' || dados.troco !== '');
+        if (!dados.tipoPagamento) return false;
+        if (dados.tipoPagamento === 'dinheiro') {
+            if (dados.troco === 'nao') return true;
+            const val = parseFloat(dados.troco);
+            return !isNaN(val) && val > 0;
+        }
+        return true;
     }
 
     async function handleConfirm() {
