@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="7" fill="#f59e0b"/>
+  <!-- Caneca de chopp -->
+  <g stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Corpo da caneca -->
+    <path d="M9 9 h11 v14 a2 2 0 0 1 -2 2 h-7 a2 2 0 0 1 -2 -2 z" fill="#ffffff"/>
+    <!-- Alça -->
+    <path d="M20 12 h3 a2 2 0 0 1 2 2 v4 a2 2 0 0 1 -2 2 h-3" fill="none"/>
+    <!-- Espuma -->
+    <path d="M9.5 9 a2.5 2.5 0 0 1 4 -1.6 a2.6 2.6 0 0 1 4.6 0.6 a2.2 2.2 0 0 1 1.4 3 H9 z" fill="#ffffff" stroke="none"/>
+  </g>
+  <!-- Linhas da bebida -->
+  <g stroke="#f59e0b" stroke-width="1.6" stroke-linecap="round">
+    <line x1="11.5" y1="13" x2="11.5" y2="21"/>
+    <line x1="14.5" y1="13" x2="14.5" y2="21"/>
+    <line x1="17.5" y1="13" x2="17.5" y2="21"/>
+  </g>
+</svg>
