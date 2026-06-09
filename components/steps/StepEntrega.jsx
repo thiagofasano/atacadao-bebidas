@@ -1,5 +1,7 @@
 'use client';
 
+import { STORE_INFO } from '@/lib/storeInfo';
+
 export default function StepEntrega({ dados, onChange }) {
     return (
         <div className="space-y-3">
@@ -50,6 +52,21 @@ export default function StepEntrega({ dados, onChange }) {
                     <p className="text-xs text-amber-700 pt-1 border-t border-amber-200">
                         ⏱️ Tempo médio de entrega: <span className="font-bold">30 a 60 minutos</span>
                     </p>
+                </div>
+            )}
+
+            {dados.tipoEntrega === 'retirada' && (
+                <div className="mt-2 bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2">
+                    <p className="text-xs font-bold text-amber-700 uppercase tracking-wide">🏪 Endereço da loja</p>
+                    <p className="text-sm text-gray-700">{STORE_INFO.endereco}</p>
+                    <a
+                        href={STORE_INFO.googleMapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block text-xs font-semibold text-amber-700 underline"
+                    >
+                        📍 Ver no mapa
+                    </a>
                 </div>
             )}
         </div>
