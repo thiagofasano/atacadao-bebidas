@@ -8,6 +8,7 @@ import ProductCard from '@/components/ProductCard';
 import ProductModal from '@/components/ProductModal';
 import CartDrawer from '@/components/CartDrawer';
 import InfoModal from '@/components/InfoModal';
+import Footer from '@/components/Footer';
 
 export default function HomePage() {
     const [grupos, setGrupos] = useState([]);
@@ -256,6 +257,8 @@ export default function HomePage() {
                     </div>
                 )}
             </main>
+
+            <Footer />
 
             {selectedProduct && (
                 <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
