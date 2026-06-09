@@ -47,6 +47,9 @@ export default function StepEntrega({ dados, onChange }) {
                             <span className="font-bold text-gray-900">R$ 30,00</span>
                         </div>
                     </div>
+                    <p className="text-xs text-amber-700 pt-1 border-t border-amber-200">
+                        ⏱️ Tempo médio de entrega: <span className="font-bold">30 a 60 minutos</span>
+                    </p>
                 </div>
             )}
         </div>

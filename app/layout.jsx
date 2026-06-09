@@ -7,6 +7,13 @@ export const metadata = {
     description: 'Delivery de bebidas em Vila da Penha e região',
 };
 
+export const viewport = {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+};
+
 export default function RootLayout({ children }) {
     return (
         <html lang="pt-BR">

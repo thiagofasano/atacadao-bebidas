@@ -18,6 +18,15 @@
   animation: fade-in-up 0.2s ease-out;
 }
 
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  /* Impede que a tela "estique"/role para os lados no celular */
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
 body {
   background: #f9fafb;
   color: #111827;
