@@ -29,6 +29,7 @@ export default function CheckoutPage() {
     const { items, totalValue, dispatch } = useCart();
     const [step, setStep] = useState(1);
     const [orderOpen, setOrderOpen] = useState(false);
+    const [enviando, setEnviando] = useState(false);
     const [dados, setDados] = useState({
         nome: '',
         telefone: '',
@@ -66,40 +67,62 @@ export default function CheckoutPage() {
     }
 
     async function handleConfirm() {
-        const numeroPedido = await salvarPedido({
-            nome: dados.nome,
-            telefone: dados.telefone,
-            tipoEntrega: dados.tipoEntrega,
-            tipoPagamento: dados.tipoPagamento,
-            troco: dados.troco,
-            cep: dados.cep,
-            bairro: dados.bairro,
-            rua: dados.rua,
-            numero: dados.numero,
-            complemento: dados.complemento,
-            referencia: dados.referencia,
-            items,
-            total: totalValue,
-        });
+        if (enviando) return;
+        setEnviando(true);
 
-        const url = buildWhatsAppUrl({
-            numeroPedido,
-            items,
-            nome: dados.nome,
-            telefone: dados.telefone,
-            tipoEntrega: dados.tipoEntrega,
-            tipoPagamento: dados.tipoPagamento,
-            troco: dados.troco,
-            cep: dados.cep,
-            bairro: dados.bairro,
-            rua: dados.rua,
-            numero: dados.numero,
-            complemento: dados.complemento,
-            referencia: dados.referencia,
-        });
-        dispatch({ type: 'CLEAR_CART' });
-        window.open(url, '_blank');
-        router.push('/');
+        // Abre a aba do WhatsApp imediatamente, ainda dentro do clique do
+        // usuário. Se abrirmos depois do await abaixo, o navegador bloqueia
+        // o popup (perde o "gesto do usuário") e o WhatsApp não abre.
+        const waWindow = window.open('', '_blank');
+
+        try {
+            const numeroPedido = await salvarPedido({
+                nome: dados.nome,
+                telefone: dados.telefone,
+                tipoEntrega: dados.tipoEntrega,
+                tipoPagamento: dados.tipoPagamento,
+                troco: dados.troco,
+                cep: dados.cep,
+                bairro: dados.bairro,
+                rua: dados.rua,
+                numero: dados.numero,
+                complemento: dados.complemento,
+                referencia: dados.referencia,
+                items,
+                total: totalValue,
+            });
+
+            const url = buildWhatsAppUrl({
+                numeroPedido,
+                items,
+                nome: dados.nome,
+                telefone: dados.telefone,
+                tipoEntrega: dados.tipoEntrega,
+                tipoPagamento: dados.tipoPagamento,
+                troco: dados.troco,
+                cep: dados.cep,
+                bairro: dados.bairro,
+                rua: dados.rua,
+                numero: dados.numero,
+                complemento: dados.complemento,
+                referencia: dados.referencia,
+            });
+
+            if (waWindow && !waWindow.closed) {
+                waWindow.location.href = url;
+            } else {
+                // Popup bloqueado mesmo assim: navega na própria aba.
+                window.location.href = url;
+            }
+
+            dispatch({ type: 'CLEAR_CART' });
+            router.push('/');
+        } catch (err) {
+            console.error('Erro ao finalizar pedido:', err);
+            if (waWindow) waWindow.close();
+            setEnviando(false);
+            alert('Não foi possível finalizar o pedido. Tente novamente.');
+        }
     }
 
     if (items.length === 0) {
@@ -260,10 +283,10 @@ export default function CheckoutPage() {
                         ) : (
                             <button
                                 onClick={handleConfirm}
-                                disabled={!canAdvance()}
+                                disabled={!canAdvance() || enviando}
                                 className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors cursor-pointer"
                             >
-                                📱 Finalizar pedido
+                                {enviando ? 'Enviando...' : '📱 Finalizar pedido'}
                             </button>
                         )}
                     </div>
