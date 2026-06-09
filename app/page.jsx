@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { fetchGrupos, fetchProdutos } from '@/lib/actions';
+import { fetchGrupos, fetchProdutos, fetchDestaquesIds } from '@/lib/actions';
 import Header from '@/components/Header';
 import CategoryFilter from '@/components/CategoryFilter';
 import ProductCard from '@/components/ProductCard';
@@ -12,6 +12,7 @@ import InfoModal from '@/components/InfoModal';
 export default function HomePage() {
     const [grupos, setGrupos] = useState([]);
     const [produtos, setProdutos] = useState([]);
+    const [destaquesIds, setDestaquesIds] = useState([]);
     // filterGrupoId: categoria selecionada pelo clique (null = mostrar todas agrupadas)
     const [filterGrupoId, setFilterGrupoId] = useState(null);
     // scrollGrupoId: categoria destacada no nav conforme scroll (apenas na home)
@@ -26,6 +27,15 @@ export default function HomePage() {
 
     const sectionRefs = useRef({});
 
+    function isIndisponivel(p) {
+        const semEstoque = p.movimenta_estoque === '1' && parseFloat(p.estoque ?? 1) <= 0;
+        return p.ativo === '0' || semEstoque;
+    }
+
+    function sortAvailableFirst(list) {
+        return [...list].sort((a, b) => Number(isIndisponivel(a)) - Number(isIndisponivel(b)));
+    }
+
     // Debounce search
     useEffect(() => {
         const t = setTimeout(() => setDebouncedSearch(searchQuery), 300);
@@ -35,6 +45,10 @@ export default function HomePage() {
     // Load groups and all products once
     useEffect(() => {
         fetchGrupos().then(setGrupos).catch(console.error);
+    }, []);
+
+    useEffect(() => {
+        fetchDestaquesIds().then(setDestaquesIds).catch(console.error);
     }, []);
 
     useEffect(() => {
@@ -53,9 +67,16 @@ export default function HomePage() {
             map[p.grupo_id].push(p);
         });
         return grupos
-            .map((g) => ({ grupo: g, items: map[g.id] || [] }))
+            .map((g) => ({ grupo: g, items: sortAvailableFirst(map[g.id] || []) }))
             .filter((g) => g.items.length > 0);
     }, [grupos, produtos]);
+
+    const maisVendidos = useMemo(() => {
+        if (destaquesIds.length === 0 || produtos.length === 0) return [];
+        const map = {};
+        produtos.forEach((p) => { map[Number(p.id)] = p; });
+        return destaquesIds.map((id) => map[id]).filter(Boolean);
+    }, [destaquesIds, produtos]);
 
     const isHomeView = !debouncedSearch && filterGrupoId === null;
 
@@ -67,7 +88,7 @@ export default function HomePage() {
             return produtos.filter((p) => normalize(p.nome)?.includes(q));
         }
         if (filterGrupoId) {
-            return produtos.filter((p) => p.grupo_id === filterGrupoId);
+            return sortAvailableFirst(produtos.filter((p) => p.grupo_id === filterGrupoId));
         }
         return null; // null = show grouped home view
     }, [debouncedSearch, filterGrupoId, produtos]);
@@ -182,6 +203,24 @@ export default function HomePage() {
                             Ver todos os produtos
                         </button>
                     </div>
+                )}
+
+                {/* Home — products grouped by category */}
+                {!loading && isHomeView && maisVendidos.length > 0 && (
+                    <section className="mb-10">
+                        <h2 className="text-lg font-bold text-gray-700 mb-3 border-l-4 border-amber-500 pl-3">
+                            ⭐ Mais Vendidos
+                        </h2>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                            {maisVendidos.map((product) => (
+                                <ProductCard
+                                    key={product.id}
+                                    product={product}
+                                    onClick={setSelectedProduct}
+                                />
+                            ))}
+                        </div>
+                    </section>
                 )}
 
                 {/* Home — products grouped by category */}

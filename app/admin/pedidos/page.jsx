@@ -1,5 +1,6 @@
 import { buscarPedidos, logoutAdmin } from '@/lib/adminActions';
 import Image from 'next/image';
+import Link from 'next/link';
 import PedidosList from './PedidosList';
 
 export default async function AdminPedidosPage() {
@@ -34,7 +35,16 @@ export default async function AdminPedidosPage() {
                             className="h-11 w-auto object-contain"
                             priority
                         />
-                        <span className="text-sm font-semibold text-gray-600 hidden sm:block">Pedidos</span>
+                        <nav className="flex items-center gap-3 text-sm font-semibold">
+                            <span className="text-amber-600">Pedidos</span>
+                            <span className="text-gray-300">|</span>
+                            <Link
+                                href="/admin/destaques"
+                                className="text-gray-500 hover:text-gray-800 transition-colors"
+                            >
+                                Destaques
+                            </Link>
+                        </nav>
                     </div>
                     <form action={logoutAdmin}>
                         <button
