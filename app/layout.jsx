@@ -1,5 +1,6 @@
 import { CartProvider } from '@/context/CartContext';
 import { ToastProvider } from '@/context/ToastContext';
+import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 
 export const metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
                 <CartProvider>
                     <ToastProvider>{children}</ToastProvider>
                 </CartProvider>
+                <Analytics />
             </body>
         </html>
     );
